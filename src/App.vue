@@ -134,7 +134,12 @@ export default {
     // Returns today's date in YYYY-MM-DD format
     getTodayDate() {
       const today = new Date();
-      return today.toISOString().substr(0, 10);
+      // Use toLocaleDateString() to get the date in local time and format it as yyyy-mm-dd
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0"); // getMonth() is zero-based
+      const day = String(today.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
     },
 
     // Apply the active filter
@@ -169,18 +174,36 @@ export default {
     // This method filters todos that are scheduled for tomorrow
     tomorrow() {
       const today = new Date();
+      // Create a new date object for tomorrow by adding 1 day
       const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1); // Increment the day by 1
-      const tomorrowDate = tomorrow.toISOString().substr(0, 10); // Format to YYYY-MM-DD
+      tomorrow.setDate(today.getDate() + 1);
+
+      // Format tomorrow's date as yyyy-mm-dd using local time
+      const year = tomorrow.getFullYear();
+      const month = String(tomorrow.getMonth() + 1).padStart(2, "0"); // getMonth() is zero-based
+      const day = String(tomorrow.getDate()).padStart(2, "0");
+
+      const tomorrowDate = `${year}-${month}-${day}`;
+
+      // Filter todos by tomorrow's date
       this.display_tasks = this.todos.filter(
         (todo) => todo.date === tomorrowDate
-      ); // Filter todos by tomorrow's date
+      );
     },
 
     // This method filters todos that are scheduled after today (upcoming tasks)
     upcoming() {
-      const today = new Date().toISOString().substr(0, 10); // Get today's date in YYYY-MM-DD format
-      this.display_tasks = this.todos.filter((todo) => todo.date > today); // Filter todos with a date later than today
+      const today = new Date();
+
+      // Format today's date as yyyy-mm-dd using local time
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0"); // getMonth() is zero-based
+      const day = String(today.getDate()).padStart(2, "0");
+
+      const todayDate = `${year}-${month}-${day}`;
+
+      // Filter todos that are scheduled after today
+      this.display_tasks = this.todos.filter((todo) => todo.date > todayDate);
     },
 
     async addTodo() {

@@ -16,6 +16,14 @@ const Todo = sequelize.define("Todo", {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  date: {
+    type: DataTypes.DATEONLY, // Only store the date (YYYY-MM-DD)
+    allowNull: false, // Ensure a date is provided
+  },
+  time: {
+    type: DataTypes.TIME, // Store only the time (HH:MM:SS)
+    allowNull: true, // Time can be optional (null)
+  },
 });
 
 // Sync model with the database

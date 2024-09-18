@@ -26,9 +26,55 @@
       <button class="bg-blue-500 text-white p-2">Add</button>
     </form>
 
+    <!-- Filter Buttons -->
+    <button
+      class="p-2 mr-3"
+      :class="
+        activeFilter === 'today'
+          ? 'bg-blue-700 text-white'
+          : 'bg-blue-500 text-black'
+      "
+      @click="setActiveFilter('today')"
+    >
+      Today
+    </button>
+    <button
+      class="p-2 mr-3"
+      :class="
+        activeFilter === 'tomorrow'
+          ? 'bg-blue-700 text-white'
+          : 'bg-blue-500 text-black'
+      "
+      @click="setActiveFilter('tomorrow')"
+    >
+      Tomorrow
+    </button>
+    <button
+      class="p-2 mr-3"
+      :class="
+        activeFilter === 'upcoming'
+          ? 'bg-blue-700 text-white'
+          : 'bg-blue-500 text-black'
+      "
+      @click="setActiveFilter('upcoming')"
+    >
+      Upcoming
+    </button>
+    <button
+      class="p-2 mr-3"
+      :class="
+        activeFilter === 'all'
+          ? 'bg-blue-700 text-white'
+          : 'bg-blue-500 text-black'
+      "
+      @click="setActiveFilter('all')"
+    >
+      All
+    </button>
+
     <ul class="flex flex-col items-center max-w-md mx-auto">
       <li
-        v-for="todo in todos"
+        v-for="todo in display_tasks"
         :key="todo.id"
         class="flex flex-col mb-8 border-b p-2 rounded-md bg-blue-200 border-blue-500 hover:opacity-50 transition-opacity cursor-pointer relative w-full max-w-sm"
         @mouseover="hovering[todo.id] = true"
@@ -62,6 +108,7 @@ export default {
   data() {
     return {
       todos: [], // Array for storing todos
+      display_tasks: [], // Filtered tasks for display
       newTodo: "", // Model for the new to-do input
       todoDate: this.getTodayDate(), // Default date set to today
       todoTime: null, // Default time set to null
@@ -69,6 +116,7 @@ export default {
       hovering: {}, // Object to track hover state for each todo
       tickImg, // Image import
       tickCompleteImg, // Image import
+      activeFilter: "today", // Track which filter is active, default to 'today'
     };
   },
 
@@ -76,15 +124,63 @@ export default {
     try {
       // Fetch existing todos when the component is mounted
       this.todos = await getTodos();
+      this.applyFilter(); // Apply the active filter (default: today)
     } catch (error) {
       console.error("Failed to fetch todos", error);
     }
   },
 
   methods: {
+    // Returns today's date in YYYY-MM-DD format
     getTodayDate() {
       const today = new Date();
-      return today.toISOString().substr(0, 10); // Returns YYYY-MM-DD format
+      return today.toISOString().substr(0, 10);
+    },
+
+    // Apply the active filter
+    applyFilter() {
+      if (this.activeFilter === "all") {
+        this.all();
+      } else if (this.activeFilter === "today") {
+        this.today();
+      } else if (this.activeFilter === "tomorrow") {
+        this.tomorrow();
+      } else if (this.activeFilter === "upcoming") {
+        this.upcoming();
+      }
+    },
+
+    setActiveFilter(filter) {
+      this.activeFilter = filter; // Set the active filter
+      this.applyFilter(); // Apply the filter
+    },
+
+    // This method sets display_tasks to show all todos
+    all() {
+      this.display_tasks = [...this.todos]; // Copy all todos to display_tasks
+    },
+
+    // This method filters todos that have today's date and displays them
+    today() {
+      const today = this.getTodayDate();
+      this.display_tasks = this.todos.filter((todo) => todo.date === today); // Filter todos by today's date
+    },
+
+    // This method filters todos that are scheduled for tomorrow
+    tomorrow() {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1); // Increment the day by 1
+      const tomorrowDate = tomorrow.toISOString().substr(0, 10); // Format to YYYY-MM-DD
+      this.display_tasks = this.todos.filter(
+        (todo) => todo.date === tomorrowDate
+      ); // Filter todos by tomorrow's date
+    },
+
+    // This method filters todos that are scheduled after today (upcoming tasks)
+    upcoming() {
+      const today = new Date().toISOString().substr(0, 10); // Get today's date in YYYY-MM-DD format
+      this.display_tasks = this.todos.filter((todo) => todo.date > today); // Filter todos with a date later than today
     },
 
     async addTodo() {
@@ -115,6 +211,9 @@ export default {
         // Add the newly created todo to the list of todos
         this.todos.push(newTodo);
 
+        // Reapply the current filter instead of calling all()
+        this.applyFilter();
+
         // Clear the input fields after adding the todo
         this.newTodo = "";
         this.todoDate = this.getTodayDate(); // Reset date to today's date
@@ -132,6 +231,9 @@ export default {
 
         // Filter out the deleted to-do from the list
         this.todos = this.todos.filter((todo) => todo.id !== id);
+
+        // Reapply the current filter instead of calling all()
+        this.applyFilter();
       } catch (error) {
         console.error("Failed to delete to-do", error);
         this.errorMessage = "Failed to delete to-do. Please try again.";

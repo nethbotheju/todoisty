@@ -1,5 +1,16 @@
-# Vue 3 + Vite
+# To-Do List App
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Frontend
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+- **Framework:** Vue.js
+- **Styling:**
+  - **CSS Framework:** Tailwind CSS
+  - **PostCSS Plugins:** Tailwind CSS, Autoprefixer
+- **Build Tool:** Vite
+
+## Backend
+
+- **Framework:** Node.js with Express
+- **Database:**
+  - **ORM:** Sequelize
+  - **Database:** SQLite3

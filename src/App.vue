@@ -12,15 +12,24 @@
         class="border p-2 m-2 w-56"
       />
 
-      <!-- Date Input (default to today's date) -->
-      <input type="date" v-model="todoDate" class="border p-2 m-2 w-56" />
+      <!-- Vue Date Picker -->
 
-      <!-- Time Input (default to null) -->
-      <input
-        type="time"
+      <VueDatePicker
+        v-model="todoDate"
+        :format="dateFormat"
+        :placeholder="'Select date'"
+        class="border m-2 w-56"
+        :clearable="false"
+      ></VueDatePicker>
+
+      <!-- Time Input -->
+      <VueDatePicker
         v-model="todoTime"
-        class="border p-2 m-2 w-56"
-        placeholder="Add time"
+        time-picker
+        :enable-time="true"
+        :format="'HH:mm'"
+        :placeholder="'Select time'"
+        class="border m-2 w-56"
       />
 
       <button class="bg-blue-500 text-white p-2">Add</button>
@@ -99,12 +108,25 @@
   </div>
 </template>
 
+<style>
+/* Hide the button responsible for opening the time picker */
+.dp__btn[data-test="open-time-picker-btn"] {
+  display: none;
+}
+</style>
+
 <script>
 import { getTodos, createTodo, deleteTodo } from "./services/todoService";
 import tickImg from "./assets/tick.svg"; // Import tick.svg
 import tickCompleteImg from "./assets/tick-complete.svg"; // Import tick-complete.svg
+import VueDatePicker from "@vuepic/vue-datepicker"; // Import Vue Date Picker
+import "@vuepic/vue-datepicker/dist/main.css"; // Import default styles for the date picker
 
 export default {
+  components: {
+    VueDatePicker, // Register it here
+  },
+
   data() {
     return {
       todos: [], // Array for storing todos
@@ -117,6 +139,7 @@ export default {
       tickImg, // Image import
       tickCompleteImg, // Image import
       activeFilter: "today", // Track which filter is active, default to 'today'
+      dateFormat: "yyyy-MM-dd",
     };
   },
 
@@ -131,6 +154,18 @@ export default {
   },
 
   methods: {
+    // Format time into HH:mm format
+    formatTime(time) {
+      if (!time || time.hours == null || time.minutes == null) return "";
+
+      let hours = time.hours;
+      const minutes = String(time.minutes).padStart(2, "0");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12; // Convert 24-hour format to 12-hour format
+      hours = String(hours).padStart(2, "0");
+
+      return `${hours}:${minutes} ${ampm}`;
+    },
     // Returns today's date in YYYY-MM-DD format
     getTodayDate() {
       const today = new Date();
@@ -217,11 +252,15 @@ export default {
         // If valid, clear the error message and proceed
         this.errorMessage = "";
 
-        // Create the new to-do object including text, date, and time
+        // Format the time before saving it
+        const formattedTime = this.todoTime
+          ? this.formatTime(this.todoTime)
+          : null;
+
         const newTodoObj = {
-          title: this.newTodo, // Use 'title' as per API naming
-          date: this.todoDate, // Add the selected date
-          time: this.todoTime || null, // Add time or null if not provided
+          title: this.newTodo,
+          date: this.todoDate,
+          time: formattedTime, // Save the formatted time (HH:mm AM/PM)
         };
 
         // Call createTodo API with the title, date, and time

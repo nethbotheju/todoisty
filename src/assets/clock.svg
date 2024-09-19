@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#959595" aria-hidden="true" class="dp__input_icon dp__input_icons" role="img" aria-label="Clock icon">
+  <path d="M12 2c-5.511 0-10 4.489-10 10s4.489 10 10 10 10-4.489 10-10-4.489-10-10-10zm0 2c4.43 0 8 3.57 8 8s-3.57 8-8 8-8-3.57-8-8 3.57-8 8-8z"></path>
+  <path d="M12 6.65a1 1 0 0 0-1 1v4.97a1 1 0 0 0 .295.709l3 2.98a1 1 0 1 0 1.414-1.414L13 12.2v-4.55a1 1 0 0 0-1-1z"></path>
+</svg>

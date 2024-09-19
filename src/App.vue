@@ -18,8 +18,10 @@
         v-model="todoDate"
         :format="dateFormat"
         :placeholder="'Select date'"
-        class="border m-2 w-56"
+        class="border m-2"
+        style="width: 152px"
         :clearable="false"
+        :min-date="getTodayDate()"
       ></VueDatePicker>
 
       <!-- Time Input -->
@@ -29,8 +31,18 @@
         :enable-time="true"
         :format="'HH:mm'"
         :placeholder="'Select time'"
-        class="border m-2 w-56"
-      />
+        class="border m-2 w-28"
+      >
+        <!-- Customize the time picker icon using the 'input-icon' slot -->
+        <template #input-icon>
+          <img
+            :src="clockIcon"
+            class="w-10"
+            alt="Clock Icon"
+            style="padding: 5px 11px"
+          />
+        </template>
+      </VueDatePicker>
 
       <button class="bg-blue-500 text-white p-2">Add</button>
     </form>
@@ -121,6 +133,7 @@ import tickImg from "./assets/tick.svg"; // Import tick.svg
 import tickCompleteImg from "./assets/tick-complete.svg"; // Import tick-complete.svg
 import VueDatePicker from "@vuepic/vue-datepicker"; // Import Vue Date Picker
 import "@vuepic/vue-datepicker/dist/main.css"; // Import default styles for the date picker
+import clockIcon from "./assets/clock.svg"; // Import clock icon
 
 export default {
   components: {
@@ -140,6 +153,7 @@ export default {
       tickCompleteImg, // Image import
       activeFilter: "today", // Track which filter is active, default to 'today'
       dateFormat: "yyyy-MM-dd",
+      clockIcon, // Clock Icon import
     };
   },
 
@@ -158,14 +172,12 @@ export default {
     formatTime(time) {
       if (!time || time.hours == null || time.minutes == null) return "";
 
-      let hours = time.hours;
+      const hours = String(time.hours).padStart(2, "0");
       const minutes = String(time.minutes).padStart(2, "0");
-      const ampm = hours >= 12 ? "PM" : "AM";
-      hours = hours % 12 || 12; // Convert 24-hour format to 12-hour format
-      hours = String(hours).padStart(2, "0");
 
-      return `${hours}:${minutes} ${ampm}`;
+      return `${hours}:${minutes}`;
     },
+
     // Returns today's date in YYYY-MM-DD format
     getTodayDate() {
       const today = new Date();

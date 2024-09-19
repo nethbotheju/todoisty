@@ -3,7 +3,7 @@
     <h1 class="text-3xl font-bold pb-5 ml-20 mb-3">TO-DO LIST APP</h1>
 
     <div
-      class="bg-neutral-300 w-[850px] h-[140px] mb-10 border border-solid rounded-3xl mx-auto"
+      class="bg-neutral-300 w-[850px] h-[140px] mb-14 border border-solid rounded-3xl mx-auto"
     >
       <form @submit.prevent="addTodo" class="">
         <!-- Row 1: To-do Input -->
@@ -116,23 +116,38 @@
           <li
             v-for="todo in display_tasks"
             :key="todo.id"
-            class="flex flex-col mb-8 border-b p-2 rounded-md bg-blue-200 border-blue-500 hover:opacity-50 transition-opacity cursor-pointer relative w-full max-w-[450px]"
+            class="flex flex-col mb-8 border-b p-2 rounded-md bg-blue-200 border-blue-500 transition-opacity relative w-full max-w-[450px]"
             @mouseover="hovering[todo.id] = true"
             @mouseleave="hovering[todo.id] = false"
-            @click="removeTodo(todo.id)"
           >
+            <!-- First row: Tick icon and task title -->
             <div class="flex items-center w-full">
               <img
-                :src="hovering[todo.id] ? tickCompleteImg : tickImg"
+                :src="hoveringTick[todo.id] ? tickCompleteImg : tickImg"
                 class="w-5 cursor-pointer transition-opacity"
+                @mouseover="hoveringTick[todo.id] = true"
+                @mouseleave="hoveringTick[todo.id] = false"
+                @click="removeTodo(todo.id)"
               />
               <span class="text-lg pl-3 flex-1 max-w-xs break-words">
                 {{ todo.title }}
               </span>
             </div>
-            <div class="text-sm pl-8 pt-1 flex items-center">
+
+            <!-- Second row: Date, time, and Edit button -->
+            <div class="text-sm pl-8 pt-1 flex items-center relative">
               <span class="pr-2"> {{ todo.date }} </span>
               <span> {{ todo.time }} </span>
+
+              <!-- Edit button (second row) -->
+              <button
+                class="ml-auto bg-gray-300 rounded-lg transition-opacity absolute right-0 mt-[-4px] hover:outline outline-[1.5px]"
+                v-if="hovering[todo.id] && !hoveringTick[todo.id]"
+                :class="hovering[todo.id] ? 'opacity-100' : 'opacity-0'"
+                style="width: 50px; height: 25px"
+              >
+                Edit
+              </button>
             </div>
           </li>
         </ul>
@@ -187,6 +202,7 @@ export default {
       todoTime: null, // Default time set to null
       errorMessage: "", // Error message for validation
       hovering: {}, // Object to track hover state for each todo
+      hoveringTick: {}, // Object to track hover state for each todo
       tickImg, // Image import
       tickCompleteImg, // Image import
       activeFilter: "today", // Track which filter is active, default to 'today'

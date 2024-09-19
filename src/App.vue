@@ -1,51 +1,60 @@
 <template>
   <div class="min-h-screen bg-gray-100 p-4">
-    <h1 class="text-3xl font-bold text-center pb-5">My To-Do List</h1>
-    <form
-      @submit.prevent="addTodo"
-      class="flex flex-col justify-center items-center mb-6"
+    <h1 class="text-3xl font-bold pb-5 ml-20 mb-3">TO-DO LIST APP</h1>
+
+    <div
+      class="bg-neutral-300 w-[850px] h-[140px] mb-10 border border-solid rounded-3xl mx-auto"
     >
-      <!-- To-do Input -->
-      <input
-        v-model="newTodo"
-        placeholder="Add a to-do"
-        class="border p-2 m-2 w-56"
-      />
-
-      <!-- Vue Date Picker -->
-
-      <VueDatePicker
-        v-model="todoDate"
-        :format="dateFormat"
-        :placeholder="'Select date'"
-        class="border m-2"
-        style="width: 152px"
-        :clearable="false"
-        :min-date="getTodayDate()"
-      ></VueDatePicker>
-
-      <!-- Time Input -->
-      <VueDatePicker
-        v-model="todoTime"
-        time-picker
-        :enable-time="true"
-        :format="'HH:mm'"
-        :placeholder="'Select time'"
-        class="border m-2 w-28"
-      >
-        <!-- Customize the time picker icon using the 'input-icon' slot -->
-        <template #input-icon>
-          <img
-            :src="clockIcon"
-            class="w-10"
-            alt="Clock Icon"
-            style="padding: 5px 11px"
+      <form @submit.prevent="addTodo" class="">
+        <!-- Row 1: To-do Input -->
+        <div class="pt-5 pl-10">
+          <input
+            v-model="newTodo"
+            placeholder="Add a to-do"
+            class="p-2 w-[700px] bg-transparent border-transparent focus:outline-none focus:border-b-2 focus:border-black"
           />
-        </template>
-      </VueDatePicker>
+        </div>
 
-      <button class="bg-blue-500 text-white p-2">Add</button>
-    </form>
+        <!-- Row 2: Date Picker, Time Picker, and Button -->
+        <div class="flex items-center pl-8 mt-2">
+          <VueDatePicker
+            v-model="todoDate"
+            :format="dateFormat"
+            :placeholder="'Select date'"
+            class="m-2"
+            style="width: 152px"
+            :clearable="false"
+            :min-date="getTodayDate()"
+          ></VueDatePicker>
+
+          <!-- Time Input -->
+          <VueDatePicker
+            v-model="todoTime"
+            time-picker
+            :enable-time="true"
+            :format="'HH:mm'"
+            :placeholder="'Select time'"
+            class="m-2 w-28"
+          >
+            <!-- Customize the time picker icon using the 'input-icon' slot -->
+            <template #input-icon>
+              <img
+                :src="clockIcon"
+                class="w-10"
+                alt="Clock Icon"
+                style="padding: 5px 11px"
+              />
+            </template>
+          </VueDatePicker>
+
+          <button
+            class="bg-blue-500 text-white p-2 ml-[400px] rounded-xl w-[70px]"
+          >
+            Add
+          </button>
+        </div>
+      </form>
+    </div>
 
     <!-- Filter Buttons -->
     <button

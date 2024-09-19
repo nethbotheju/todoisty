@@ -56,76 +56,88 @@
       </form>
     </div>
 
-    <!-- Filter Buttons -->
-    <button
-      class="p-2 mr-3"
-      :class="
-        activeFilter === 'today'
-          ? 'bg-blue-700 text-white'
-          : 'bg-blue-500 text-black'
-      "
-      @click="setActiveFilter('today')"
+    <div
+      class="bg-neutral-300 w-[1050px] h-[500px] border border-solid rounded-3xl mx-auto"
     >
-      Today
-    </button>
-    <button
-      class="p-2 mr-3"
-      :class="
-        activeFilter === 'tomorrow'
-          ? 'bg-blue-700 text-white'
-          : 'bg-blue-500 text-black'
-      "
-      @click="setActiveFilter('tomorrow')"
-    >
-      Tomorrow
-    </button>
-    <button
-      class="p-2 mr-3"
-      :class="
-        activeFilter === 'upcoming'
-          ? 'bg-blue-700 text-white'
-          : 'bg-blue-500 text-black'
-      "
-      @click="setActiveFilter('upcoming')"
-    >
-      Upcoming
-    </button>
-    <button
-      class="p-2 mr-3"
-      :class="
-        activeFilter === 'all'
-          ? 'bg-blue-700 text-white'
-          : 'bg-blue-500 text-black'
-      "
-      @click="setActiveFilter('all')"
-    >
-      All
-    </button>
-
-    <ul class="flex flex-col items-center max-w-md mx-auto">
-      <li
-        v-for="todo in display_tasks"
-        :key="todo.id"
-        class="flex flex-col mb-8 border-b p-2 rounded-md bg-blue-200 border-blue-500 hover:opacity-50 transition-opacity cursor-pointer relative w-full max-w-sm"
-        @mouseover="hovering[todo.id] = true"
-        @mouseleave="hovering[todo.id] = false"
-        @click="removeTodo(todo.id)"
+      <!-- Filter Buttons -->
+      <div
+        class="ml-20 pl-10 pr-10 pt-[70px] flex flex-col w-[300px] space-y-8 text-xl"
       >
-        <div class="flex items-center w-full">
-          <img
-            :src="hovering[todo.id] ? tickCompleteImg : tickImg"
-            class="w-5 cursor-pointer transition-opacity"
-          />
-          <span class="text-lg pl-3 flex-1 max-w-xs break-words">
-            {{ todo.title }}
-          </span>
-        </div>
-        <div class="text-sm pl-8 pt-1 flex items-center">
-          <span class="pr-2"> {{ todo.date }} </span>
-          <span> {{ todo.time }} </span>
-        </div>
-      </li>
-    </ul>
+        <button
+          class="p-2 mr-3 rounded-3xl"
+          :class="
+            activeFilter === 'today'
+              ? 'bg-blue-700 text-white'
+              : 'bg-blue-500 text-black'
+          "
+          @click="setActiveFilter('today')"
+        >
+          Today
+        </button>
+        <button
+          class="p-2 mr-3 rounded-3xl"
+          :class="
+            activeFilter === 'tomorrow'
+              ? 'bg-blue-700 text-white'
+              : 'bg-blue-500 text-black'
+          "
+          @click="setActiveFilter('tomorrow')"
+        >
+          Tomorrow
+        </button>
+        <button
+          class="p-2 mr-3 rounded-3xl"
+          :class="
+            activeFilter === 'upcoming'
+              ? 'bg-blue-700 text-white'
+              : 'bg-blue-500 text-black'
+          "
+          @click="setActiveFilter('upcoming')"
+        >
+          Upcoming
+        </button>
+        <button
+          class="p-2 mr-3 rounded-3xl"
+          :class="
+            activeFilter === 'all'
+              ? 'bg-blue-700 text-white'
+              : 'bg-blue-500 text-black'
+          "
+          @click="setActiveFilter('all')"
+        >
+          All
+        </button>
+      </div>
+
+      <div class="w-[550px] ml-[435px] mt-[-275px]">
+        <ul
+          class="flex flex-col items-center max-w-[500px] mx-auto h-[380px] overflow-y-auto custom-scrollbar"
+        >
+          <li
+            v-for="todo in display_tasks"
+            :key="todo.id"
+            class="flex flex-col mb-8 border-b p-2 rounded-md bg-blue-200 border-blue-500 hover:opacity-50 transition-opacity cursor-pointer relative w-full max-w-[450px]"
+            @mouseover="hovering[todo.id] = true"
+            @mouseleave="hovering[todo.id] = false"
+            @click="removeTodo(todo.id)"
+          >
+            <div class="flex items-center w-full">
+              <img
+                :src="hovering[todo.id] ? tickCompleteImg : tickImg"
+                class="w-5 cursor-pointer transition-opacity"
+              />
+              <span class="text-lg pl-3 flex-1 max-w-xs break-words">
+                {{ todo.title }}
+              </span>
+            </div>
+            <div class="text-sm pl-8 pt-1 flex items-center">
+              <span class="pr-2"> {{ todo.date }} </span>
+              <span> {{ todo.time }} </span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -133,6 +145,23 @@
 /* Hide the button responsible for opening the time picker */
 .dp__btn[data-test="open-time-picker-btn"] {
   display: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px; /* Width of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: white; /* Background color of the scrollbar track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgb(58, 57, 57); /* Color of the scrollbar handle */
+  border-radius: 10px; /* Optional: Rounded corners for the scrollbar handle */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: white; /* Darker color on hover */
 }
 </style>
 

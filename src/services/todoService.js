@@ -11,11 +11,7 @@ export async function createTodo(title, date, time) {
   const response = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      title, // Title of the todo
-      date, // Date for the todo
-      time, // Time for the todo (can be null)
-    }),
+    body: JSON.stringify({ title, date, time }), // Send data as JSON
   });
   return response.json(); // Returns the created todo object
 }
@@ -23,4 +19,14 @@ export async function createTodo(title, date, time) {
 // Delete a todo by its ID
 export async function deleteTodo(id) {
   await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+}
+
+// Update Todo by ID
+export async function updateTodo(id, title, date, time) {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "PUT", // Use PUT or PATCH
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, date, time }), // Send updated data
+  });
+  return response.json(); // Return updated todo
 }

@@ -145,6 +145,7 @@
                 v-if="hovering[todo.id] && !hoveringTick[todo.id]"
                 :class="hovering[todo.id] ? 'opacity-100' : 'opacity-0'"
                 style="width: 50px; height: 25px"
+                @click="edit(todo.id)"
               >
                 Edit
               </button>
@@ -181,7 +182,12 @@
 </style>
 
 <script>
-import { getTodos, createTodo, deleteTodo } from "./services/todoService";
+import {
+  getTodos,
+  createTodo,
+  deleteTodo,
+  updateTodo,
+} from "./services/todoService";
 import tickImg from "./assets/tick.svg"; // Import tick.svg
 import tickCompleteImg from "./assets/tick-complete.svg"; // Import tick-complete.svg
 import VueDatePicker from "@vuepic/vue-datepicker"; // Import Vue Date Picker
@@ -208,6 +214,7 @@ export default {
       activeFilter: "today", // Track which filter is active, default to 'today'
       dateFormat: "yyyy-MM-dd",
       clockIcon, // Clock Icon import
+      edit_todo: null,
     };
   },
 
@@ -308,14 +315,12 @@ export default {
     },
 
     async addTodo() {
-      // Input validation: check if newTodo (title) is empty
       if (this.newTodo.trim() === "") {
         this.errorMessage = "Please enter a to-do";
         return;
       }
 
       try {
-        // If valid, clear the error message and proceed
         this.errorMessage = "";
 
         // Format the time before saving it
@@ -323,32 +328,50 @@ export default {
           ? this.formatTime(this.todoTime)
           : null;
 
-        const newTodoObj = {
-          title: this.newTodo,
-          date: this.todoDate,
-          time: formattedTime, // Save the formatted time (HH:mm AM/PM)
-        };
+        if (this.edit_todo) {
+          // Update the existing task using the updateTodo function
+          const updatedTodo = await updateTodo(
+            this.edit_todo.id,
+            this.newTodo,
+            this.todoDate,
+            formattedTime
+          );
 
-        // Call createTodo API with the title, date, and time
-        const newTodo = await createTodo(
-          newTodoObj.title,
-          newTodoObj.date,
-          newTodoObj.time
-        );
+          // Find the todo in the array and update it
+          const index = this.todos.findIndex(
+            (todo) => todo.id === this.edit_todo.id
+          );
+          if (index !== -1) {
+            this.todos.splice(index, 1, updatedTodo); // Replace the todo in the list
+          }
 
-        // Add the newly created todo to the list of todos
-        this.todos.push(newTodo);
+          this.edit_todo = null; // Clear the edit state after updating
+        } else {
+          // Otherwise, add a new task
+          const newTodoObj = {
+            title: this.newTodo,
+            date: this.todoDate,
+            time: formattedTime,
+          };
 
-        // Reapply the current filter instead of calling all()
-        this.applyFilter();
+          const newTodo = await createTodo(
+            newTodoObj.title,
+            newTodoObj.date,
+            newTodoObj.time
+          );
 
-        // Clear the input fields after adding the todo
+          this.todos.push(newTodo); // Add the newly created todo
+        }
+
+        this.applyFilter(); // Reapply the current filter to update the task list
+
+        // Clear input fields after adding/editing the todo
         this.newTodo = "";
-        this.todoDate = this.getTodayDate(); // Reset date to today's date
-        this.todoTime = null; // Reset time to null
+        this.todoDate = this.getTodayDate();
+        this.todoTime = null;
       } catch (error) {
-        console.error("Failed to add to-do", error);
-        this.errorMessage = "Failed to add to-do. Please try again.";
+        console.error("Failed to add/edit to-do", error);
+        this.errorMessage = "Failed to add/edit to-do. Please try again.";
       }
     },
 
@@ -365,6 +388,29 @@ export default {
       } catch (error) {
         console.error("Failed to delete to-do", error);
         this.errorMessage = "Failed to delete to-do. Please try again.";
+      }
+    },
+
+    edit(id) {
+      // Find the todo to be edited by its id
+      const todoToEdit = this.todos.find((todo) => todo.id === id);
+
+      // Populate the form with the selected todo's data for editing
+      if (todoToEdit) {
+        this.newTodo = todoToEdit.title; // Set the title in the input field
+
+        // Convert the date string (YYYY-MM-DD) to a Date object
+        this.todoDate = new Date(todoToEdit.date); // VueDatePicker expects a Date object
+
+        // Convert the time string (HH:mm) to an object with hours and minutes
+        if (todoToEdit.time) {
+          const [hours, minutes] = todoToEdit.time.split(":").map(Number);
+          this.todoTime = { hours, minutes }; // VueDatePicker expects a time object
+        } else {
+          this.todoTime = null; // Handle case where time is null or not available
+        }
+
+        this.edit_todo = todoToEdit; // Keep track of the todo being edited
       }
     },
   },

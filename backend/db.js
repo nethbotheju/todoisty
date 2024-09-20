@@ -17,16 +17,24 @@ const Todo = sequelize.define("Todo", {
     defaultValue: false,
   },
   date: {
-    type: DataTypes.DATEONLY, // Only store the date (YYYY-MM-DD)
-    allowNull: false, // Ensure a date is provided
+    type: DataTypes.DATEONLY,
+    allowNull: false,
   },
   time: {
-    type: DataTypes.TIME, // Store only the time (HH:MM:SS)
-    allowNull: true, // Time can be optional (null)
+    type: DataTypes.TIME,
+    allowNull: true,
   },
 });
 
 // Sync model with the database
-sequelize.sync();
+async function syncDatabase() {
+  try {
+    await sequelize.sync();
+    console.log("Database synchronized successfully.");
+  } catch (error) {
+    console.error("Unable to sync database:", error);
+  }
+}
 
-module.exports = { sequelize, Todo };
+// Export the sequelize instance and models
+module.exports = { sequelize, Todo, syncDatabase };

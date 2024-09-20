@@ -153,9 +153,11 @@
             </div>
 
             <!-- Second row: Date, time, and Edit button -->
-            <div class="text-sm pl-8 pt-2 flex items-center relative">
+            <div class="text-sm pl-8 pt-3 pb-1 flex items-center relative">
+              <img src="./assets/calender.svg" class="w-[23px] pr-[5px]" />
               <span class="pr-2"> {{ todo.date }} </span>
-              <span> {{ todo.time }} </span>
+              <img src="./assets/clock.svg" class="w-[23px] pr-[4px] ml-2" />
+              <span> {{ todo.time ? todo.time : "--:--" }} </span>
 
               <!-- Edit button (second row) -->
               <button

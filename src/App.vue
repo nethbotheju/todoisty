@@ -3,7 +3,7 @@
     <h1 class="text-3xl font-bold pb-5 ml-20 mb-3">TO-DO LIST APP</h1>
 
     <div
-      class="bg-neutral-300 w-[850px] h-[140px] mb-14 border border-solid rounded-3xl mx-auto"
+      class="bg-neutral-300 w-[850px] h-[170px] mb-14 border border-solid rounded-3xl mx-auto"
     >
       <form @submit.prevent="addTodo" class="">
         <!-- Row 1: To-do Input -->
@@ -12,11 +12,15 @@
             v-model="newTodo"
             placeholder="Add a to-do"
             class="p-2 w-[700px] bg-transparent border-transparent focus:outline-none focus:border-b-2 focus:border-black"
+            maxlength="90"
           />
+          <div class="text-sm text-gray-500 mt-1 absolute ml-[580px]">
+            {{ newTodo.length }} / 90 characters
+          </div>
         </div>
 
         <!-- Row 2: Date Picker, Time Picker, and Button -->
-        <div class="flex items-center pl-8 mt-2">
+        <div class="flex items-center pl-8 mt-8">
           <VueDatePicker
             v-model="todoDate"
             :format="dateFormat"
@@ -140,13 +144,16 @@
                 @mouseleave="hoveringTick[todo.id] = false"
                 @click="removeTodo(todo.id)"
               />
-              <span class="text-lg pl-3 flex-1 max-w-xs break-words">
+              <span
+                class="text-lg pl-3 flex-1 w-[350px] break-words"
+                style="line-height: 1.4"
+              >
                 {{ todo.title }}
               </span>
             </div>
 
             <!-- Second row: Date, time, and Edit button -->
-            <div class="text-sm pl-8 pt-1 flex items-center relative">
+            <div class="text-sm pl-8 pt-2 flex items-center relative">
               <span class="pr-2"> {{ todo.date }} </span>
               <span> {{ todo.time }} </span>
 

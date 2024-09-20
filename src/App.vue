@@ -47,11 +47,22 @@
             </template>
           </VueDatePicker>
 
-          <button
-            class="bg-blue-500 text-white p-2 ml-[400px] rounded-xl w-[70px]"
-          >
-            Add
-          </button>
+          <div class="flex justify-end ml-[310px]">
+            <button
+              v-if="edit_todo"
+              class="bg-gray-500 text-white p-2 rounded-xl w-[70px] ml-[22px]"
+              @click="cancelEdit"
+            >
+              Cancel
+            </button>
+
+            <button
+              class="bg-blue-500 text-white p-2 rounded-xl w-[70px]"
+              :class="!edit_todo ? 'ml-[100px]' : 'ml-2'"
+            >
+              {{ edit_todo ? "Done" : "Add" }}
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -412,6 +423,13 @@ export default {
 
         this.edit_todo = todoToEdit; // Keep track of the todo being edited
       }
+    },
+
+    cancelEdit() {
+      this.edit_todo = null; // Clear the edit state
+      this.newTodo = ""; // Clear the input field
+      this.todoDate = this.getTodayDate(); // Reset date to today
+      this.todoTime = null; // Reset time to null
     },
   },
 };

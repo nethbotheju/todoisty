@@ -21,7 +21,7 @@ app.get("/todos", async (req, res) => {
 
 // Create a new todo
 app.post("/todos", async (req, res) => {
-  const { title, date, time } = req.body;
+  const { title, date, time, reminder, remindertime } = req.body;
 
   // Validate input
   if (!title || !date) {
@@ -29,7 +29,13 @@ app.post("/todos", async (req, res) => {
   }
 
   try {
-    const newTodo = await Todo.create({ title, date, time });
+    const newTodo = await Todo.create({
+      title,
+      date,
+      time,
+      reminder,
+      remindertime,
+    });
     res.json(newTodo);
   } catch (error) {
     console.error("Error creating todo:", error);
@@ -55,7 +61,7 @@ app.delete("/todos/:id", async (req, res) => {
 // Update a todo by its ID
 app.put("/todos/:id", async (req, res) => {
   const { id } = req.params;
-  const { title, date, time } = req.body;
+  const { title, date, time, reminder, remindertime } = req.body;
 
   try {
     const todo = await Todo.findByPk(id);
@@ -67,6 +73,8 @@ app.put("/todos/:id", async (req, res) => {
     todo.title = title;
     todo.date = date;
     todo.time = time;
+    todo.reminder = reminder;
+    todo.remindertime = remindertime;
     await todo.save(); // Save changes
 
     res.json(todo); // Send the updated todo as a response

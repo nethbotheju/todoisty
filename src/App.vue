@@ -51,7 +51,17 @@
             </template>
           </VueDatePicker>
 
-          <div class="flex justify-end ml-[310px]">
+          <span class="pl-3 text-lg"> Reminder</span>
+          <div class="ml-2 mt-2">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="checkbox" v-model="reminder" class="sr-only peer" />
+              <div
+                class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+              ></div>
+            </label>
+          </div>
+
+          <div class="flex justify-end ml-[120px]">
             <button
               v-if="edit_todo"
               class="bg-gray-500 text-white p-2 rounded-xl w-[70px] ml-[22px]"
@@ -235,6 +245,8 @@ export default {
       dateFormat: "yyyy-MM-dd",
       clockIcon, // Clock Icon import
       edit_todo: null,
+      reminder: false, // This will toggle true/false with the checkbox
+      remindertime: null,
     };
   },
 
@@ -257,6 +269,31 @@ export default {
       const minutes = String(time.minutes).padStart(2, "0");
 
       return `${hours}:${minutes}`;
+    },
+
+    formattedReminderTime(time) {
+      if (time == null) {
+        return "00:00";
+      } else {
+        return this.subtractMinutes(time, 15);
+      }
+    },
+
+    subtractMinutes(time, minutesToSubtract) {
+      // Create a Date object for today and set the hours and minutes
+      const [hours, minutes] = time.split(":").map(Number);
+      const date = new Date();
+      date.setHours(hours);
+      date.setMinutes(minutes);
+
+      // Subtract the minutes
+      date.setMinutes(date.getMinutes() - minutesToSubtract);
+
+      // Format the time back to HH:mm
+      const updatedHours = String(date.getHours()).padStart(2, "0");
+      const updatedMinutes = String(date.getMinutes()).padStart(2, "0");
+
+      return `${updatedHours}:${updatedMinutes}`;
     },
 
     // Returns today's date in YYYY-MM-DD format
@@ -354,7 +391,9 @@ export default {
             this.edit_todo.id,
             this.newTodo,
             this.todoDate,
-            formattedTime
+            formattedTime,
+            this.reminder,
+            this.formattedReminderTime(formattedTime) // Use 'this'
           );
 
           // Find the todo in the array and update it
@@ -372,12 +411,16 @@ export default {
             title: this.newTodo,
             date: this.todoDate,
             time: formattedTime,
+            reminder: this.reminder,
+            remindertime: this.formattedReminderTime(formattedTime), // Use 'this'
           };
 
           const newTodo = await createTodo(
             newTodoObj.title,
             newTodoObj.date,
-            newTodoObj.time
+            newTodoObj.time,
+            this.reminder,
+            newTodoObj.remindertime // Make sure to pass the correct value
           );
 
           this.todos.push(newTodo); // Add the newly created todo
@@ -389,6 +432,8 @@ export default {
         this.newTodo = "";
         this.todoDate = this.getTodayDate();
         this.todoTime = null;
+        this.reminder = false;
+        this.remindertime = null; // You might want to clear this too
       } catch (error) {
         console.error("Failed to add/edit to-do", error);
         this.errorMessage = "Failed to add/edit to-do. Please try again.";
@@ -430,6 +475,9 @@ export default {
           this.todoTime = null; // Handle case where time is null or not available
         }
 
+        if (todoToEdit.reminder) {
+          this.reminder = true;
+        }
         this.edit_todo = todoToEdit; // Keep track of the todo being edited
       }
     },
@@ -439,6 +487,8 @@ export default {
       this.newTodo = ""; // Clear the input field
       this.todoDate = this.getTodayDate(); // Reset date to today
       this.todoTime = null; // Reset time to null
+      this.reminder = false;
+      this.remindertime = null;
     },
   },
 };

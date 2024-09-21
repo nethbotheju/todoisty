@@ -3,15 +3,15 @@ const API_URL = "http://localhost:5001/todos";
 // Fetch all todos
 export async function getTodos() {
   const response = await fetch(API_URL);
-  return response.json(); // Returns an array of todos including date and time
+  return response.json(); // Returns an array of todos including date, time, reminder, remindertime
 }
 
-// Create a new todo with title, date, and time
-export async function createTodo(title, date, time) {
+// Create a new todo with title, date, time, reminder, and remindertime
+export async function createTodo(title, date, time, reminder, remindertime) {
   const response = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, date, time }), // Send data as JSON
+    body: JSON.stringify({ title, date, time, reminder, remindertime }), // Send data as JSON
   });
   return response.json(); // Returns the created todo object
 }
@@ -21,12 +21,19 @@ export async function deleteTodo(id) {
   await fetch(`${API_URL}/${id}`, { method: "DELETE" });
 }
 
-// Update Todo by ID
-export async function updateTodo(id, title, date, time) {
+// Update a todo by its ID with title, date, time, reminder, and remindertime
+export async function updateTodo(
+  id,
+  title,
+  date,
+  time,
+  reminder,
+  remindertime
+) {
   const response = await fetch(`${API_URL}/${id}`, {
-    method: "PUT", // Use PUT or PATCH
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, date, time }), // Send updated data
+    body: JSON.stringify({ title, date, time, reminder, remindertime }), // Send updated data
   });
   return response.json(); // Return updated todo
 }

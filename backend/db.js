@@ -24,12 +24,20 @@ const Todo = sequelize.define("Todo", {
     type: DataTypes.TIME,
     allowNull: true,
   },
+  reminder: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  remindertime: {
+    type: DataTypes.TIME,
+    allowNull: true,
+  },
 });
 
 // Sync model with the database
 async function syncDatabase() {
   try {
-    await sequelize.sync();
+    await sequelize.sync({ alter: true }); // Use alter to update the schema
     console.log("Database synchronized successfully.");
   } catch (error) {
     console.error("Unable to sync database:", error);

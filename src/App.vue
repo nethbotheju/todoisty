@@ -247,6 +247,8 @@ export default {
       edit_todo: null,
       reminder: false, // This will toggle true/false with the checkbox
       remindertime: null,
+      currentTime: null,
+      currentDate: null,
     };
   },
 
@@ -258,6 +260,8 @@ export default {
     } catch (error) {
       console.error("Failed to fetch todos", error);
     }
+
+    setInterval(this.setTheRemainder, 1000);
   },
 
   methods: {
@@ -489,6 +493,27 @@ export default {
       this.todoTime = null; // Reset time to null
       this.reminder = false;
       this.remindertime = null;
+    },
+
+    setTheRemainder() {
+      this.currentDate = this.getTodayDate();
+      // Get current time directly from Date object
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      this.currentTime = `${hours}:${minutes}`; // Format as HH:mm
+
+      this.todos.forEach((todo) => {
+        if (todo.reminder) {
+          if (
+            todo.date === this.currentDate &&
+            todo.remindertime === this.currentTime
+          ) {
+            alert(`Reminder: ${todo.title}`);
+            todo.reminder = false;
+          }
+        }
+      });
     },
   },
 };

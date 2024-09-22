@@ -525,39 +525,6 @@ export default {
             todo.date === this.currentDate &&
             todo.remindertime === this.currentTime
           ) {
-            const audio = new Audio(reminderAudio); // Create new Audio instance
-
-            // Play the audio for the first time
-            audio.play().catch((error) => {
-              console.error("Audio playback failed:", error);
-            });
-
-            // Set a timeout to play the audio again after 1 second
-            setTimeout(() => {
-              audio.currentTime = 0; // Reset the audio to the beginning
-              audio.play().catch((error) => {
-                console.error("Audio playback failed:", error);
-              });
-            }, 4000); // 1000ms = 1 second
-
-            todo.reminder = false; // Disable reminder after it plays
-          }
-        }
-      });
-    },
-    setTheRemainder() {
-      this.currentDate = this.getTodayDate();
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, "0");
-      const minutes = String(now.getMinutes()).padStart(2, "0");
-      this.currentTime = `${hours}:${minutes}`;
-
-      this.todos.forEach((todo) => {
-        if (todo.reminder) {
-          if (
-            todo.date === this.currentDate &&
-            todo.remindertime === this.currentTime
-          ) {
             const audio = new Audio(reminderAudio);
 
             // Play the audio for the first time

@@ -278,7 +278,20 @@ export default {
       console.error("Failed to fetch todos", error);
     }
 
-    setInterval(this.setTheRemainder, 1000);
+    const now = new Date();
+    const seconds = now.getSeconds();
+
+    // Calculate the delay to the next full minute (when seconds == 0)
+    const delay = (60 - seconds) * 1000;
+
+    // Set a timeout to trigger at the start of the next full minute
+    setTimeout(() => {
+      // Call the function immediately
+      this.setTheRemainder();
+
+      // Then set the interval to run every minute (60000ms)
+      setInterval(this.setTheRemainder, 60000);
+    }, delay);
   },
 
   methods: {
@@ -543,8 +556,6 @@ export default {
                 console.error("Audio playback failed:", error);
               });
             }, 4000);
-
-            todo.reminder = false; // Disable reminder after it plays
           }
         }
       });

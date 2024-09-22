@@ -184,6 +184,20 @@
         </ul>
       </div>
     </div>
+    <!-- Notification Popup -->
+    <div
+      v-if="notificationVisible"
+      class="fixed top-5 right-6 bg-blue-500 text-white p-6 rounded-lg shadow-lg transition-opacity duration-500"
+      :class="{
+        'opacity-100': notificationVisible,
+        'opacity-0': !notificationVisible,
+      }"
+      @transitionend="onTransitionEnd"
+    >
+      Reminder! <br />In 15 min you have a task to complete. <br />Task: "{{
+        currentTodo.title
+      }}"
+    </div>
   </div>
 </template>
 
@@ -223,6 +237,7 @@ import tickCompleteImg from "./assets/tick-complete.svg"; // Import tick-complet
 import VueDatePicker from "@vuepic/vue-datepicker"; // Import Vue Date Picker
 import "@vuepic/vue-datepicker/dist/main.css"; // Import default styles for the date picker
 import clockIcon from "./assets/clock.svg"; // Import clock icon
+import reminderAudio from "./assets/reminderAudio.mp3";
 
 export default {
   components: {
@@ -249,6 +264,8 @@ export default {
       remindertime: null,
       currentTime: null,
       currentDate: null,
+      notificationVisible: false, // Track notification visibility
+      currentTodo: {}, // Hold the current todo details
     };
   },
 
@@ -497,11 +514,10 @@ export default {
 
     setTheRemainder() {
       this.currentDate = this.getTodayDate();
-      // Get current time directly from Date object
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, "0");
       const minutes = String(now.getMinutes()).padStart(2, "0");
-      this.currentTime = `${hours}:${minutes}`; // Format as HH:mm
+      this.currentTime = `${hours}:${minutes}`;
 
       this.todos.forEach((todo) => {
         if (todo.reminder) {
@@ -509,11 +525,77 @@ export default {
             todo.date === this.currentDate &&
             todo.remindertime === this.currentTime
           ) {
-            alert(`Reminder: ${todo.title}`);
-            todo.reminder = false;
+            const audio = new Audio(reminderAudio); // Create new Audio instance
+
+            // Play the audio for the first time
+            audio.play().catch((error) => {
+              console.error("Audio playback failed:", error);
+            });
+
+            // Set a timeout to play the audio again after 1 second
+            setTimeout(() => {
+              audio.currentTime = 0; // Reset the audio to the beginning
+              audio.play().catch((error) => {
+                console.error("Audio playback failed:", error);
+              });
+            }, 4000); // 1000ms = 1 second
+
+            todo.reminder = false; // Disable reminder after it plays
           }
         }
       });
+    },
+    setTheRemainder() {
+      this.currentDate = this.getTodayDate();
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      this.currentTime = `${hours}:${minutes}`;
+
+      this.todos.forEach((todo) => {
+        if (todo.reminder) {
+          if (
+            todo.date === this.currentDate &&
+            todo.remindertime === this.currentTime
+          ) {
+            const audio = new Audio(reminderAudio);
+
+            // Play the audio for the first time
+            audio.play().catch((error) => {
+              console.error("Audio playback failed:", error);
+            });
+
+            // Set the current todo and show the notification
+            this.currentTodo = todo; // Set the current todo
+            this.showNotification();
+
+            // Set a timeout to play the audio again after 4 seconds
+            setTimeout(() => {
+              audio.currentTime = 0; // Reset the audio to the beginning
+              audio.play().catch((error) => {
+                console.error("Audio playback failed:", error);
+              });
+            }, 4000);
+
+            todo.reminder = false; // Disable reminder after it plays
+          }
+        }
+      });
+    },
+
+    showNotification() {
+      this.notificationVisible = true;
+
+      // Hide the notification after 5 seconds
+      setTimeout(() => {
+        this.notificationVisible = false;
+      }, 10000);
+    },
+
+    onTransitionEnd() {
+      if (!this.notificationVisible) {
+        this.notificationVisible = false; // Ensure it is hidden after transition
+      }
     },
   },
 };

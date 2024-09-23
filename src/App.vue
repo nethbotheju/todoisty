@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 p-4">
+  <div class="min-h-screen bg-gray-100 p-4 min-w-[1280px]">
     <h1 class="text-3xl font-bold pb-5 ml-20 mb-3">TO-DO LIST APP</h1>
 
     <div
@@ -15,7 +15,7 @@
             maxlength="90"
           />
           <div class="text-sm text-gray-500 mt-1 absolute ml-[580px]">
-            {{ newTodo.length }} / 90 characters
+            {{ newTodo.length }}&nbsp;/&nbsp;90&nbsp;characters
           </div>
         </div>
 

@@ -1,14 +1,23 @@
 {
   "development": {
-    "dialect": "sqlite",
-    "storage": "./database.sqlite"
+    "username": "neth",
+    "password": "2005",
+    "database": "to-do-list-app",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
   },
   "test": {
-    "dialect": "sqlite",
-    "storage": "./database.test.sqlite"
+    "username": "neth",
+    "password": "2005",
+    "database": "to-do-list-app",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
   },
   "production": {
-    "dialect": "sqlite",
-    "storage": "./database.production.sqlite"
+    "username": "neth",
+    "password": "2005",
+    "database": "to-do-list-app",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
   }
 }

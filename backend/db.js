@@ -2,8 +2,11 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 // Initialize Sequelize with SQLite
 const sequelize = new Sequelize({
-  dialect: "sqlite",
-  storage: "./database.sqlite",
+  username: "neth",
+  password: "2005",
+  database: "to-do-list-app",
+  host: "127.0.0.1",
+  dialect: "postgres",
 });
 
 // Define the Todo model

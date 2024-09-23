@@ -1,12 +1,14 @@
 const express = require("express");
 const cors = require("cors");
-const { sequelize, Todo, syncDatabase } = require("./db"); // Import Todo model and sequelize instance
+const { sequelize, Todo, syncDatabase } = require("./db");
+const process = require("process");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const port = 5001;
+const env = process.env.NODE_ENV || "development"; // Ensure env is defined
 
 // Get all todos
 app.get("/todos", async (req, res) => {

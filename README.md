@@ -14,3 +14,5 @@
 - **Database:**
   - **ORM:** Sequelize
   - **Database:** SQLite3
+
+# Further steps

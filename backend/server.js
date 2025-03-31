@@ -50,3 +50,44 @@ app.post("/todos", async (req, res) => {
     res.status(500).json({ error: "Failed to create todo" });
   }
 });
+
+// Delete a todo by ID
+app.delete("/todos/:id", async (req, res) => {
+  try {
+    const result = await Todo.findByIdAndDelete(req.params.id);
+    if (result) {
+      res.json({ message: "Todo deleted successfully" });
+    } else {
+      res.status(404).json({ error: "Todo not found" });
+    }
+  } catch (error) {
+    console.error("Error deleting todo:", error);
+    res.status(500).json({ error: "Failed to delete todo" });
+  }
+});
+
+// Update a todo by its ID
+app.put("/todos/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, date, time, reminder, remindertime } = req.body;
+
+  try {
+    const todo = await Todo.findById(id);
+    if (!todo) {
+      return res.status(404).json({ error: "Todo not found" });
+    }
+
+    // Update the todo properties
+    todo.title = title;
+    todo.date = date;
+    todo.time = time;
+    todo.reminder = reminder;
+    todo.remindertime = remindertime;
+    await todo.save();
+
+    res.json(todo);
+  } catch (error) {
+    console.error("Error updating todo:", error);
+    res.status(500).json({ error: "Failed to update todo" });
+  }
+});

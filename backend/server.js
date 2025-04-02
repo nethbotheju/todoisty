@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 
 const app = express();
 app.use(cors());
@@ -9,6 +10,7 @@ app.use(express.json());
 const port = 5001;
 
 const Todo = require("./models/todo");
+const User = require("./models/user");
 const connectDB = require("./config/database");
 
 // Connect to the database
@@ -24,7 +26,7 @@ app.get("/todos", async (req, res) => {
     const todos = await Todo.find();
     res.json(todos);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch todos" });
+    res.status(500).json({ error });
   }
 });
 
@@ -47,7 +49,7 @@ app.post("/todos", async (req, res) => {
     });
     res.status(201).json(newTodo);
   } catch (error) {
-    res.status(500).json({ error: "Failed to create todo" });
+    res.status(500).json({ error });
   }
 });
 
@@ -61,8 +63,7 @@ app.delete("/todos/:id", async (req, res) => {
       res.status(404).json({ error: "Todo not found" });
     }
   } catch (error) {
-    console.error("Error deleting todo:", error);
-    res.status(500).json({ error: "Failed to delete todo" });
+    res.status(500).json({ error });
   }
 });
 
@@ -87,7 +88,62 @@ app.put("/todos/:id", async (req, res) => {
 
     res.json(todo);
   } catch (error) {
-    console.error("Error updating todo:", error);
-    res.status(500).json({ error: "Failed to update todo" });
+    res.status(500).json({ error });
+  }
+});
+
+app.post("/register", async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+
+  if (!firstName || !lastName || !email || !password) {
+    return res.status(400).json({ error: "Required fields are missing" });
+  }
+
+  try {
+    const excistingUser = await User.findOne({ email });
+    if (excistingUser) {
+      return res.status(409).json({ error: "User is already registered." });
+    }
+
+    const encyptedPassword = await bcrypt.hash(password, 10);
+
+    await User.create({
+      firstName,
+      lastName,
+      email,
+      password: encyptedPassword,
+    });
+
+    res.status(201).json({ message: "User successfully registered." });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Required fields are missing" });
+  }
+
+  try {
+    const excistingUser = await User.findOne({ email });
+    if (!excistingUser) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const passwordCheck = await bcrypt.compare(
+      excistingUser.password,
+      password
+    );
+
+    if (passwordCheck) {
+      return res.status(401).json({ error: "Password is incorrect." });
+    }
+
+    res.status(200).json({ message: "User successfully logged in." });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 });

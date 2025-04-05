@@ -231,13 +231,13 @@ import {
   createTodo,
   deleteTodo,
   updateTodo,
-} from "./services/todoService";
-import tickImg from "./assets/tick.svg"; // Import tick.svg
-import tickCompleteImg from "./assets/tick-complete.svg"; // Import tick-complete.svg
+} from "../services/todoService";
+import tickImg from "../assets/tick.svg"; // Import tick.svg
+import tickCompleteImg from "../assets/tick-complete.svg"; // Import tick-complete.svg
 import VueDatePicker from "@vuepic/vue-datepicker"; // Import Vue Date Picker
 import "@vuepic/vue-datepicker/dist/main.css"; // Import default styles for the date picker
-import clockIcon from "./assets/clock.svg"; // Import clock icon
-import reminderAudio from "./assets/reminderAudio.mp3";
+import clockIcon from "../assets/clock.svg"; // Import clock icon
+import reminderAudio from "../assets/reminderAudio.mp3";
 
 export default {
   components: {

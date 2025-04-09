@@ -208,3 +208,28 @@ app.post("/refresh", async (req, res) => {
     }
   );
 });
+
+app.post("/logout", async (req, res) => {
+  const { email, deviceId } = req.body;
+  if (!deviceId || !email)
+    return res.status(400).json({
+      message: "Required fields are missing either deviceId or email",
+    });
+
+  await redisClient.del(`refresh:${email}:${deviceId}`);
+  res.json({ message: "Logged out from this device" });
+});
+
+app.post("/logout/all", async (req, res) => {
+  const { email } = req.body;
+  if (!email)
+    return res.status(400).json({
+      message: "Email field is missing",
+    });
+
+  const keys = await redisClient.keys(`refresh:${email}:*`);
+  for (const key of keys) {
+    await redisClient.del(key);
+  }
+  res.json({ message: "Logged out from all devices" });
+});

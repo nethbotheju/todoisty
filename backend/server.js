@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken");
 const redisClient = require("../config/redis");
 const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
 
+const authenticateToken = require("./middleware/jwtAuth");
+
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
 
@@ -25,7 +27,7 @@ app.listen(port, () => {
 });
 
 // Get all todos
-app.get("/todos", async (req, res) => {
+app.get("/todos", authenticateToken, async (req, res) => {
   try {
     const todos = await Todo.find();
     res.json(todos);
@@ -35,7 +37,7 @@ app.get("/todos", async (req, res) => {
 });
 
 // Create a new todo
-app.post("/todos", async (req, res) => {
+app.post("/todos", authenticateToken, async (req, res) => {
   const { title, date, time, reminder, remindertime } = req.body;
 
   if (!title || !date || !time || !reminder || !remindertime) {
@@ -58,7 +60,7 @@ app.post("/todos", async (req, res) => {
 });
 
 // Delete a todo by ID
-app.delete("/todos/:id", async (req, res) => {
+app.delete("/todos/:id", authenticateToken, async (req, res) => {
   try {
     const result = await Todo.findByIdAndDelete(req.params.id);
     if (result) {
@@ -72,7 +74,7 @@ app.delete("/todos/:id", async (req, res) => {
 });
 
 // Update a todo by its ID
-app.put("/todos/:id", async (req, res) => {
+app.put("/todos/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { title, date, time, reminder, remindertime } = req.body;
 
@@ -220,7 +222,7 @@ app.post("/logout", async (req, res) => {
   res.json({ message: "Logged out from this device" });
 });
 
-app.post("/logout/all", async (req, res) => {
+app.post("/logout/all", authenticateToken, async (req, res) => {
   const { email } = req.body;
   if (!email)
     return res.status(400).json({

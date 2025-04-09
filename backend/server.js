@@ -121,13 +121,22 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ error: "Required fields are missing" });
+  if (!email || !password || !rememberMe) {
+    return res.status(400).json({
+      error:
+        "Required fields are missing either email or password or rememberMe",
+    });
   }
 
   try {
+    // Create a access Token
+
+    if (rememberMe == true) {
+      // Create a refresh Token
+    }
+
     const excistingUser = await User.findOne({ email });
     if (!excistingUser) {
       return res.status(404).json({ error: "User not found." });

@@ -2,6 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 
+const jwt = require("jsonwebtoken");
+const redisClient = require("../config/redis");
+const { generateAccessToken, generateRefreshToken } = require("../utils/jwt");
+
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
 
@@ -121,22 +125,16 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { email, password, rememberMe } = req.body;
+  const { email, password, rememberMe, deviceId } = req.body;
 
-  if (!email || !password || !rememberMe) {
+  if (!email || !password || !rememberMe || !deviceId) {
     return res.status(400).json({
       error:
-        "Required fields are missing either email or password or rememberMe",
+        "Required fields are missing either email, password, rememberMe or deviceId",
     });
   }
 
   try {
-    // Create a access Token
-
-    if (rememberMe == true) {
-      // Create a refresh Token
-    }
-
     const excistingUser = await User.findOne({ email });
     if (!excistingUser) {
       return res.status(404).json({ error: "User not found." });
@@ -151,7 +149,25 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Password is incorrect." });
     }
 
-    res.status(200).json({ message: "User successfully logged in." });
+    const accessToken = generateAccessToken({ email: email });
+
+    let refreshToken = null;
+    if (rememberMe == true) {
+      refreshToken = await generateRefreshToken(
+        { email: email },
+        deviceId,
+        redisClient
+      );
+    }
+
+    res
+      .status(200)
+      .json(
+        { message: "User successfully logged in." },
+        deviceId,
+        accessToken,
+        refreshToken
+      );
   } catch (error) {
     res.status(500).json({ error });
   }

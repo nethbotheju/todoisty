@@ -96,7 +96,7 @@ export default {
       rememberMe: false,
       isLoading: false,
       errorMessage: "",
-      apiUrl: import.meta.env.VITE_API_URL,
+      apiUrl: import.meta.env.VITE_API_URL || "http://localhost:5001",
     };
   },
   methods: {
@@ -105,7 +105,7 @@ export default {
       this.errorMessage = "";
 
       try {
-        const response = await fetch(`${this.apiUrl}/login`, {
+        const response = await fetch(`${apiUrl}/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -114,16 +114,23 @@ export default {
             email: this.email,
             password: this.password,
             rememberMe: this.rememberMe,
+            credentials: "include",
           }),
-          credentials: "include",
         });
 
-        const data = await response.json();
+        console.log("Response status:", response.status);
 
         if (!response.ok) {
-          throw new Error(
-            data.message || "Login failed. Please check your credentials."
-          );
+          try {
+            const errorData = await response.json();
+            throw new Error(
+              errorData.message || `Login failed: ${response.status}`
+            );
+          } catch (jsonError) {
+            throw new Error(
+              `Login failed: ${response.statusText || response.status}`
+            );
+          }
         }
 
         if (data.accessToken) {

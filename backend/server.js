@@ -172,3 +172,39 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ error });
   }
 });
+
+app.post("/refresh", async (req, res) => {
+  const { deviceId, email, refreshToken } = req.body;
+
+  if (!deviceId || !email)
+    return res.status(400).json({
+      message: "Required fields are missing either deviceId or email",
+    });
+
+  if (!refreshToken) return res.status(401).json({ message: "Unauthorized" });
+
+  const storedToken = await redisClient.get(`refresh:${email}:${deviceId}`);
+  if (!storedToken || storedToken !== refreshToken)
+    return res.status(403).json({ message: "Forbidden" });
+
+  jwt.verify(
+    refreshToken,
+    publicKey,
+    { algorithms: ["RS256"] },
+    async (err, user) => {
+      if (err) return res.status(403).json({ message: "Forbidden" });
+
+      await redisClient.del(`refresh:${user.email}:${deviceId}`);
+      const newAccessToken = generateAccessToken({
+        email: email,
+      });
+      const newRefreshToken = await generateRefreshToken(
+        { email: email },
+        deviceId,
+        redisClient
+      );
+
+      res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    }
+  );
+});

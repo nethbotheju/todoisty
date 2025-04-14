@@ -1,8 +1,6 @@
-module.exports = {
+export default {
   plugins: {
     tailwindcss: {},
-    autoprefixer: {}, // which is a PostCSS plugin that automatically adds any necessary vendor prefixes based on the browsers you tell it you need to support
+    autoprefixer: {},
   },
 };
-
-// PostCSS is a tool used to transform CSS with JavaScript plugins.
